@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
+<body>
+
+	<header th:replace="common/layout :: header"></header>
+
+	<div class="container py-4">
+		<h2 th:text="${title}"></h2>
+		<hr>
+		<form th:action="@{/client/form}" th:object="${client}" method="post"
+			enctype="multipart/form-data">
+			<div class="form-group row">
+				<label for="name" class="col-sm-2 col-form-label">Nombre</label>
+				<div class="col-sm-6">
+					<input type="text" th:field="*{name}" class="form-control"
+						th:errorclass="'form-control alert-danger'" /> <small
+						class="form-text text-danger" th:if="${#fields.hasErrors('name')}"
+						th:errors="*{name}"></small>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="phone" class="col-sm-2 col-form-label">Teléfono
+					(opcional)</label>
+				<div class="col-sm-6">
+					<input type="text" th:field="*{phone}" class="form-control"
+						th:errorclass="'form-control alert-danger'" /> <small
+						class="form-text text-danger"
+						th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="email" class="col-sm-2 col-form-label">Correo
+					(opcional)</label>
+				<div class="col-sm-6">
+					<input type="text" th:field="*{email}" class="form-control"
+						th:errorclass="'form-control alert-danger'" /> <small
+						class="form-text text-danger"
+						th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-sm-6">
+					<input type="submit" th:value="${title}" class="btn btn-success" />
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<footer th:replace="common/layout :: footer"></footer>
+</body>
+</html>

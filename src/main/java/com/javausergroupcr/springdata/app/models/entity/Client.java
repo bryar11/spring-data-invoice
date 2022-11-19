@@ -1,7 +1,7 @@
 package com.javausergroupcr.springdata.app.models.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -10,15 +10,16 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.Where;
 
 import lombok.Data;
 
@@ -34,26 +35,44 @@ public class Client implements Serializable {
 	@NotEmpty
 	private String name;
 
-	@NotEmpty
-	private String lastname;
+	private String phone;
 
-	@NotEmpty
 	@Email
 	private String email;
 
-	@NotNull
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date createAt;
+	private boolean enabled;
 
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@Where(clause = "enabled = true")
+	@OrderBy("id DESC")
 	private List<Invoice> invoices;
 
-	private static final long serialVersionUID = 1L;
-	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_by")
+	private DBUser createdBy;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "updated_by")
+	private DBUser updatedBy;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
+
+	@PrePersist
+	public void prePersist() {
+		createdAt = LocalDateTime.now();
+	}
+
 	@Override
 	public String toString() {
-		return name + " " + lastname;
+		return name;
 	}
+
+	public double getBalance() {
+		return invoices.stream().filter(f -> f.isEnabled()).mapToDouble(f -> f.getBalance()).sum();
+	}
+
+	private static final long serialVersionUID = 1L;
 
 }

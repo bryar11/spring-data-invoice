@@ -6,5 +6,5 @@ import com.javausergroupcr.springdata.app.models.entity.DBUser;
 
 public interface IUserDao extends CrudRepository<DBUser, Long> {
 
-	public DBUser findByUsername(String username);
+	public DBUser findByUsernameAndEnabledTrue(String username);
 }

@@ -1,22 +1,24 @@
 $("#find_product").autocomplete({
 
 	source: function(request, response) {
-		$.ajax({
-			url: "/invoice/find-product/" + request.term,
-			dataType: "json",
-			data: {
-				term: request.term
-			},
-			success: function(data) {
-				response($.map(data, function(item) {
-					return {
-						value: item.id,
-						label: item.name,
-						price: item.price,
-					};
-				}));
-			},
-		});
+		if (request.term.length > 2) {
+			$.ajax({
+				url: "/invoice/find-product/" + request.term,
+				dataType: "json",
+				data: {
+					term: request.term
+				},
+				success: function(data) {
+					response($.map(data, function(item) {
+						return {
+							value: item.id,
+							label: item.name,
+							price: item.price,
+						};
+					}));
+				},
+			});
+		}
 	},
 	select: function(event, ui) {
 		if (itemsHelper.hasProduct(ui.item.value)) {
@@ -29,6 +31,7 @@ $("#find_product").autocomplete({
 		item = item.replace(/{ID}/g, ui.item.value);
 		item = item.replace(/{NAME}/g, ui.item.label);
 		item = item.replace(/{PRICE}/g, ui.item.price);
+		item = item.replace(/{FORMATTED_PRICE}/g, itemsHelper.formatCurrency(ui.item.price));
 
 		$("#findItems tbody").append(item);
 		itemsHelper.calculateAmount(ui.item.value, ui.item.price, 1);
@@ -44,7 +47,9 @@ $("form").submit(function() {
 
 var itemsHelper = {
 	calculateAmount: function(id, price, quantity) {
-		$("#total_amount_" + id).html(parseInt(price) * parseInt(quantity));
+		var subtotal = parseInt(price) * parseInt(quantity);
+		$("#total_amount_" + id).html(subtotal);
+		$("#formatted_amount_" + id).html(itemsHelper.formatCurrency(subtotal));
 		this.calculateTotal();
 	},
 	hasProduct: function(id) {
@@ -74,6 +79,12 @@ var itemsHelper = {
 			total += parseInt($(this).html());
 		});
 
-		$('#total').html(total);
+		$('#total').val(this.formatCurrency(total));
+	},
+	formatCurrency: function(amount) {
+		return (amount).toLocaleString('es-CR', {
+			style: 'currency',
+			currency: 'CRC',
+		});
 	}
 }

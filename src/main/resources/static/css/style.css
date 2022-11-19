@@ -1,0 +1,19 @@
+.form-signin {
+	width: 100%;
+	max-width: 330px;
+	padding: 15px;
+	margin: 0 auto;
+}
+
+table.table-bordered {
+	border: 1px solid black;
+	margin-top: 20px;
+}
+
+table.table-bordered>thead>tr>th {
+	border: 1px solid black;
+}
+
+table.table-bordered>tbody>tr>td {
+	border: 1px solid black;
+}

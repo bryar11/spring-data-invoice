@@ -15,21 +15,23 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "invoices_items")
+@Table(name = "invoice_items")
 public class InvoiceItem implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Integer quantity;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
 	private Product product;
 
-	public Double calculateAmount() {
-		return quantity.doubleValue() * product.getPrice();
+	private int quantity;
+	
+	private double price;
+
+	public double calculateAmount() {
+		return quantity * product.getPrice();
 	}
 
 	private static final long serialVersionUID = 1L;

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
+<body>
+
+	<header th:replace="common/layout :: header"></header>
+
+	<div class="text-center py-4">
+		<form class="form-signin" th:action="@{/common/login}" method="post">
+			<h1 class="h3 mb-3 font-weight-normal">Por favor inicie sesión</h1>
+			<label for="username" class="sr-only">Usuario</label> <input
+				type="text" name="username" id="username" class="form-control"
+				placeholder="Usuario" autofocus required /> <label for="password"
+				class="sr-only">Contraseña</label> <input type="password"
+				name="password" id="password" class="form-control"
+				placeholder="Contraseña" required />
+			<div class="mt-4">
+				<input class="btn btn-lg btn-primary btn-block" type="submit"
+					value="Entrar" />
+			</div>
+			<input type="hidden" th:name="${_csrf.parameterName}"
+				th:value="${_csrf.token}" />
+		</form>
+	</div>
+
+	<footer th:replace="common/layout :: footer"></footer>
+</body>
+</html>

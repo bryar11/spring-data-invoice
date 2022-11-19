@@ -27,11 +27,14 @@ public class DBUser implements Serializable {
 
 	@Column(length = 30, unique = true)
 	private String username;
+	
+	@Column(length = 30)
+	private String name;
 
 	@Column(length = 60)
 	private String password;
 
-	private Boolean enabled;
+	private boolean enabled;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")

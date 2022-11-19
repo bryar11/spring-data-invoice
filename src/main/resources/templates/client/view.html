@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
+<body>
+	<header th:replace="common/layout :: header"></header>
+	<div class="container py-4">
+
+		<div class="jumbotron">
+			<h2 class="display-4 mb-5" th:text="${title}"></h2>
+			<ul class="list-group my-2">
+				<li class="list-group-item active"
+					th:text="'Nombre: ' + ${client.name}"></li>
+				<li th:if="${client?.phone}" class="list-group-item"
+					th:text="'Teléfono: ' + ${client.phone}"></li>
+				<li th:if="${client?.email}" class="list-group-item"
+					th:text="'Correo: ' + ${client.email}"></li>
+				<li class="list-group-item list-group-item-primary"
+					th:text="'Saldo: ' + ${#numbers.formatCurrency(client.balance)}"></li>
+			</ul>
+			<table class="table">
+				<tbody>
+					<tr>
+						<td align="right">
+							<p class="lead">
+								<a sec:authorize="hasRole('ROLE_USER')"
+									class="btn btn-primary btn-lg bi-cart"
+									th:href="@{'/invoice/form/' + ${client.id}}"
+									th:text="' Facturar'"></a>
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<h2 th:text="'Facturas'"></h2>
+		<hr th:if="${#lists.isEmpty(client.invoices)}" />
+		<div th:if="${#lists.isEmpty(client.invoices)}"
+			class="alert alert-info my-4"
+			th:text="'No hay facturas asignadas para el cliente'"></div>
+
+		<table th:if="${not #lists.isEmpty(client.invoices)}"
+			class="table table-striped my-4">
+			<thead class="thead">
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Fecha</th>
+					<th scope="col">Total</th>
+					<th scope="col">Pagado</th>
+					<th scope="col">Pendiente</th>
+					<th scope="col">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="invoice: ${client.invoices}">
+					<th scope="row" th:text="${invoice.id}"></th>
+					<td th:text="${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></td>
+					<td th:text="${#numbers.formatCurrency(invoice.total)}"></td>
+					<td th:text="${#numbers.formatCurrency(invoice.paid)}"></td>
+					<td th:text="${#numbers.formatCurrency(invoice.balance)}"></td>
+					<td sec:authorize="hasRole('ROLE_USER')"><a
+						class="btn btn-info btn-xs bi-eye"
+						th:href="@{'/invoice/view/' + ${invoice.id}}" th:text="' Ver'"></a>
+						<a sec:authorize="hasRole('ROLE_USER')"
+						th:if="${invoice.balance > 0}"
+						class="btn btn-primary btn-xs bi-credit-card"
+						th:href="@{'/payment/form/' + ${invoice.id}}" th:text="' Pagar'"></a>
+						<a sec:authorize="hasRole('ROLE_ADMIN')"
+						class="btn btn-danger btn-xs bi-trash3"
+						th:href="@{'/invoice/delete/' + ${invoice.id}}"
+						th:text="' Eliminar'"
+						th:attr="onclick=|return confirm('Está seguro que desea eliminar la factura #${invoice.id}?');|"></a></td>
+				</tr>
+			</tbody>
+
+		</table>
+
+	</div>
+
+	<footer th:replace="common/layout :: footer"></footer>
+</body>
+</html>

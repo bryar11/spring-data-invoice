@@ -1,83 +1,102 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
 <body>
-	<header th:replace="layout/layout :: header"></header>
+	<header th:replace="common/layout :: header"></header>
 	<div class="container py-4">
 
-		<div class="card bg-light">
-			<div class="card-header" th:text="${title}"></div>
-			<div class="card-body">
+		<div class="jumbotron">
+			<h2 class="display-4 mb-5" th:text="${title}"></h2>
+			<ul class="list-group my-2">
+				<li class="list-group-item active"
+					th:text="'Fecha: ' + ${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></li>
+				<li class="list-group-item"
+					th:text="${'Cliente: ' + invoice.client.name}"></li>
+				<li class="list-group-item"
+					th:text="'Total: ' + ${#numbers.formatCurrency(invoice.total)}"></li>
+				<li class="list-group-item"
+					th:text="'Pagado: ' + ${#numbers.formatCurrency(invoice.paid)}"></li>
+				<li class="list-group-item list-group-item-primary"
+					th:text="'Pendiente: ' + ${#numbers.formatCurrency(invoice.balance)}"></li>
+			</ul>
+			<table class="table">
+				<tbody>
+					<tr>
+						<td align="right">
+							<p class="lead">
+								<a class="btn btn-info btn-lg bi-arrow-return-left"
+									th:href="@{'/client/view/' + ${invoice.client.id}}"
+									th:text="' Volver'"></a> <a
+									class="btn btn-primary btn-lg bi-credit-card"
+									th:if="${invoice.balance > 0}"
+									th:href="@{'/payment/form/' + ${invoice.id}}" th:text="' Pagar'"></a>
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-				<h4 class="card-title">
-					<a th:href="@{'/view/' + ${invoice.client.id}}"
-						class="btn btn-light btn-xs">&laquo; volver</a>
-				</h4>
-
-				<ul class="list-group my-2">
-					<li class="list-group-item list-group-item-primary"
-						th:text="'Datos del cliente'"></li>
-					<li class="list-group-item" th:text="${invoice.client}"></li>
-					<li class="list-group-item" th:text="${invoice.client.email}"></li>
-				</ul>
-
-				<ul class="list-group my-2">
-					<li class="list-group-item list-group-item-success"
-						th:text="'Datos de la factura'"></li>
-					<li class="list-group-item" th:text="'Número: ' + ${invoice.id}"></li>
-					<li class="list-group-item"
-						th:text="'Descripción: ' + ${invoice.description}"></li>
-					<li class="list-group-item"
-						th:text="'Fecha: ' + ${invoice.createAt}"></li>
-				</ul>
-				<div class="alert alert-info my-4"
-					th:if="${#lists.isEmpty(invoice.items)}"
-					th:text="'No hay líneas para la factura' + ${invoice.description}"></div>
-
-				<table th:if="${not #lists.isEmpty(invoice.items)}"
-					class="table table-striped table-hover table-bordered my-3">
-					<thead>
-						<tr>
-							<th>Producto</th>
-							<th>Precio</th>
-							<th>Cantidad</th>
-							<th>Total</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="item: ${invoice.items}">
-							<td th:text="${item.product.name}"></td>
-							<td th:text="${item.product.price}"></td>
-							<td th:text="${item.quantity}"></td>
-							<td th:text="${item.calculateAmount()}"></td>
-						</tr>
-					</tbody>
-
-				</table>
-
-				<h5 class="float-right">
-					Total <span th:text="${invoice.total}"
-						class="badge badge-secondary"></span>
-				</h5>
-
-				<div class="card border-info mb-4" style="max-width: 20rem;">
-					<div class="card-header">Observaciones</div>
-					<div class="card-body">
-						<p class="card-text" th:text="${invoice.observation}"
-							th:if="${not #strings.isEmpty(invoice.observation)}"></p>
-						<h4 class="card-title"
-							th:if="${#strings.isEmpty(invoice.observation)}"
-							th:text="'No tiene observaciones'"></h4>
-					</div>
-				</div>
-
-				<a th:href="@{'/view/' + ${invoice.client.id}}"
-					class="btn btn-light btn-xs">&laquo; volver</a>
-
-			</div>
 		</div>
+		<h2 th:text="'Productos facturados'"></h2>
+		<hr th:if="${#lists.isEmpty(invoice.items)}" />
+		<div th:if="${#lists.isEmpty(invoice.items)}"
+			class="alert alert-info my-4"
+			th:text="'No hay líneas para la factura #' + ${invoice.id}"></div>
+
+		<table th:if="${not #lists.isEmpty(invoice.items)}"
+			class="table table-striped my-4">
+			<thead class="thead">
+				<tr>
+					<th>Producto</th>
+					<th>Precio</th>
+					<th>Cantidad</th>
+					<th>Subtotal</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item: ${invoice.items}">
+					<td th:text="${item.product.name}"></td>
+					<td th:text="${#numbers.formatCurrency(item.product.price)}"></td>
+					<td th:text="${item.quantity}"></td>
+					<td th:text="${#numbers.formatCurrency(item.calculateAmount())}"></td>
+				</tr>
+			</tbody>
+
+		</table>
+
+		<h2 th:text="'Pagos realizados'" class="mt-5"></h2>
+		<hr th:if="${#lists.isEmpty(invoice.payments)}" />
+		<div th:if="${#lists.isEmpty(invoice.payments)}"
+			class="alert alert-info my-4"
+			th:text="'No hay pagos para la factura #' + ${invoice.id}"></div>
+
+		<table th:if="${not #lists.isEmpty(invoice.payments)}"
+			class="table table-striped my-4">
+			<thead class="thead">
+				<tr>
+					<th>Fecha</th>
+					<th>Monto</th>
+					<th sec:authorize="hasRole('ROLE_ADMIN')">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="payment: ${invoice.payments}">
+					<td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy')}"></td>
+					<td th:text="${#numbers.formatCurrency(payment.amount)}"></td>
+					<td sec:authorize="hasRole('ROLE_ADMIN')"><a
+						class="btn btn-danger btn-xs bi-trash3"
+						th:href="@{'/payment/delete/' + ${payment.id}}"
+						th:text="' Eliminar'"
+						th:attr="onclick=|return confirm('Está seguro que desea eliminar el pago de la fecha ${#temporals.format(payment.createdAt, 'dd/MM/yyyy')}, realizado por un monto de ${#numbers.formatCurrency(payment.amount)}?');|"></a>
+					</td>
+				</tr>
+			</tbody>
+
+		</table>
 
 	</div>
-	<footer th:replace="layout/layout :: footer"></footer>
+	<footer th:replace="common/layout :: footer"></footer>
 </body>
 </html>

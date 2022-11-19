@@ -1,54 +1,60 @@
-/* Populate clients */
-INSERT INTO clients (name, lastname, email, create_at) VALUES('John', 'Doe', 'john.doe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Linus', 'Torvalds', 'linus.torvalds@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Jane', 'Doe', 'jane.doe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Rasmus', 'Lerdorf', 'rasmus.lerdorf@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Erich', 'Gamma', 'erich.gamma@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Richard', 'Helm', 'richard.helm@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Ralph', 'Johnson', 'ralph.johnson@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('John', 'Vlissides', 'john.vlissides@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('James', 'Gosling', 'james.gosling@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Bruce', 'Lee', 'bruce.lee@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Johnny', 'Doe', 'johnny.doe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('John', 'Roe', 'john.roe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Jane', 'Roe', 'jane.roe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Richard', 'Doe', 'richard.doe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Janie', 'Doe', 'janie.doe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Phillip', 'Webb', 'phillip.webb@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Stephane', 'Nicoll', 'stephane.nicoll@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Sam', 'Brannen', 'sam.brannen@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Juergen', 'Hoeller', 'juergen.Hoeller@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Janie', 'Roe', 'janie.roe@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('John', 'Smith', 'john.smith@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Joe', 'Bloggs', 'joe.bloggs@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('John', 'Stiles', 'john.stiles@gmail.com', '2022-01-22');
-INSERT INTO clients (name, lastname, email, create_at) VALUES('Richard', 'Roe', 'stiles.roe@gmail.com', '2022-01-22');
-
-/* Populate products */
-INSERT INTO products (name, price, create_at) VALUES('Pantalla LCD Panasonic', 300000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Camara digital Sony', 125000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('iPhone', 630000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Dell G5 15', 900000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Hewlett Packard Multifuncional F2280', 45000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Bianchi Bicicleta Aro 26', 45000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Comoda 5 Cajones', 65000, NOW());
-
-/* Populate invoices */
-INSERT INTO invoices (description, observation, client_id, create_at) VALUES('Factura equipos de oficina', null, 1, NOW());
-INSERT INTO invoices (description, observation, client_id, create_at) VALUES('Factura Bicicleta', 'Alguna nota importante!', 1, NOW());
-
-/* Populate invoices_items */
-INSERT INTO invoices_items (quantity, invoice_id, product_id) VALUES(1, 1, 1);
-INSERT INTO invoices_items (quantity, invoice_id, product_id) VALUES(2, 1, 4);
-INSERT INTO invoices_items (quantity, invoice_id, product_id) VALUES(1, 1, 5);
-INSERT INTO invoices_items (quantity, invoice_id, product_id) VALUES(1, 1, 7);
-INSERT INTO invoices_items (quantity, invoice_id, product_id) VALUES(3, 2, 6);
-
 /* Populate users */
-INSERT INTO users (id, username, password, enabled) VALUES (1, 'barce', '$2a$10$O9wxmH/AeyZZzIS09Wp8YOEMvFnbRVJ8B4dmAMVSGloR62lj.yqXG', 1);
-INSERT INTO users (id, username, password, enabled) VALUES (2, 'admin', '$2a$10$DOMDxjYyfZ/e7RcBfUpzqeaCs8pLgcizuiQWXPkU35nOhZlFcE9MS', 1);
+INSERT INTO users (id, username, name, password, enabled) VALUES (1, 'admin', 'Bryan Arce', '$2a$10$OcvnN8OFOCv9eohbTDnrJe8USxD.LdXGGLuEMCZXlmxXoyGUiRntS', 1);
+INSERT INTO users (id, username, name, password, enabled) VALUES (2, 'blancaarce', 'Blanca Arce', '$2a$10$eu.tegaj23s09qtcxAVYnOfi3kb0S.0t5usBoL.AOkQIAM8PHMBna', 1);
 
 /* Populate authorities */
 INSERT INTO authorities (user_id, authority) VALUES (1, 'ROLE_USER');
-INSERT INTO authorities (user_id, authority) VALUES (2, 'ROLE_ADMIN');
+INSERT INTO authorities (user_id, authority) VALUES (1, 'ROLE_ADMIN');
 INSERT INTO authorities (user_id, authority) VALUES (2, 'ROLE_USER');
+
+/* Populate clients */
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('John Doe', null, 'john.doe@gmail.com', 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Linus Torvalds', null, 'linus.torvalds@gmail.com', 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Jane Doe', '88664477', null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Rasmus Lerdorf', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Erich Gamma', '88997766', null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Richard Helm', '88774455', null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Ralph Johnson', '88445566', null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('John Vlissides', '88332211', null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('James Gosling', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Bruce Lee', '88552266', 'bruce.lee@hotmail.com', 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Johnny Doe', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('John Roe', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Jane Roe', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Richard Doe', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Janie Doe', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Phillip Webb', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Stephane Nicoll', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Sam Brannen', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Juergen Hoeller', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Janie Roe', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('John Smith', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Joe Bloggs', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('John Stiles', null, null, 1, 1, null, NOW(), null);
+INSERT INTO clients (name, phone, email, enabled, created_by, updated_by, created_at, updated_at) VALUES('Richard Roe', null, null, 1, 1, null, NOW(), null);
+
+/* Populate products */
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('Pantalla LCD Panasonic', 300000, 1, 1, null, NOW(), null);
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('Camara digital Sony', 125000, 1, 1, null, NOW(), null);
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('iPhone', 630000, 1, 1, null, NOW(), null);
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('Dell G5 15', 900000, 1, 1, null, NOW(), null);
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('Hewlett Packard Multifuncional F2280', 45000, 1, 1, null, NOW(), null);
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('Bianchi Bicicleta Aro 26', 45000, 1, 1, null, NOW(), null);
+INSERT INTO products (name, price, enabled, created_by, updated_by, created_at, updated_at) VALUES('Comoda 5 Cajones', 65000, 1, 1, null, NOW(), null);
+
+/* Populate invoices */
+INSERT INTO invoices (client_id, enabled, created_by, updated_by, created_at, updated_at) VALUES(10, 1, 1, null, NOW(), null);
+INSERT INTO invoices (client_id, enabled, created_by, updated_by, created_at, updated_at) VALUES(10, 1, 1, null, NOW(), null);
+INSERT INTO invoices (client_id, enabled, created_by, updated_by, created_at, updated_at) VALUES(10, 1, 1, null, NOW(), null);
+
+/* Populate invoice_items */
+INSERT INTO invoice_items (invoice_id, product_id, quantity, price) VALUES(1, 1, 1, 300000);
+INSERT INTO invoice_items (invoice_id, product_id, quantity, price) VALUES(1, 4, 2, 900000);
+INSERT INTO invoice_items (invoice_id, product_id, quantity, price) VALUES(1, 5, 1, 45000);
+INSERT INTO invoice_items (invoice_id, product_id, quantity, price) VALUES(1, 7, 1, 65000);
+INSERT INTO invoice_items (invoice_id, product_id, quantity, price) VALUES(2, 6, 6, 45000);
+INSERT INTO invoice_items (invoice_id, product_id, quantity, price) VALUES(3, 7, 2, 65000);
+
+/* Populate invoice_payments */
+INSERT INTO invoice_payments (invoice_id, amount, enabled, created_by, updated_by, created_at, updated_at) VALUES(1, 1800000, 1, 1, null, NOW(), null);
+INSERT INTO invoice_payments (invoice_id, amount, enabled, created_by, updated_by, created_at, updated_at) VALUES(3, 130000, 1, 1, null, NOW(), null);

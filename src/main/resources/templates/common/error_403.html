@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head"></head>
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
 <body>
 
-	<header th:replace="layout/layout :: header"></header>
+	<header th:replace="common/layout :: header"></header>
 
 	<div class="container py-4">
 
@@ -14,13 +15,13 @@
 					Los sentimos <span th:text="${#authentication.name}"></span>, NO
 					tiene permisos para acceder a este recurso.
 				</h5>
-				<a th:href="@{/list}" class="btn btn-outline-light" role="button">Ir
+				<a th:href="@{/client/list}" class="btn btn-outline-light" role="button">Ir
 					al inicio</a>
 
 			</div>
 		</div>
 	</div>
 
-	<footer th:replace="layout/layout :: footer"></footer>
+	<footer th:replace="common/layout :: footer"></footer>
 </body>
 </html>

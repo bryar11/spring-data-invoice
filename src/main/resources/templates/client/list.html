@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
+<body>
+
+	<header th:replace="common/layout :: header"></header>
+
+	<div class="container py-4">
+		<div class="row mb-2">
+			<div class="col-md-6">
+				<h2 th:text="${title}" class="mb-4"></h2>
+			</div>
+			<div class="col-md-6">
+				<a sec:authorize="hasRole('ROLE_USER')" th:href="@{/client/form/}"
+					class="btn btn-primary bi bi-person-plus active float-right"
+					role="button" aria-pressed="true"
+					th:text="' Registrar nuevo cliente'"></a>
+			</div>
+		</div>
+		<form th:replace="common/paginator :: search"></form>
+		<table class="table table-striped">
+			<thead class="thead">
+				<tr>
+					<th>Nombre</th>
+					<th>Teléfono</th>
+					<th>Correo</th>
+					<th sec:authorize="hasRole('ROLE_USER')">Saldo</th>
+					<th sec:authorize="hasRole('ROLE_USER')">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="client: ${clients}">
+					<td th:text="${client.name}"></td>
+					<td th:text="${client.phone}"></td>
+					<td th:text="${client.email}"></td>
+					<td sec:authorize="hasRole('ROLE_USER')"
+						th:text="${#numbers.formatCurrency(client.balance)}"></td>
+					<td sec:authorize="hasRole('ROLE_USER')"><a
+						class="btn btn-info btn-xs bi-eye"
+						th:href="@{/client/view/} + ${client.id}" th:text="' Ver'"></a> <a
+						sec:authorize="hasRole('ROLE_USER')"
+						class="btn btn-primary btn-xs bi-cart"
+						th:href="@{'/invoice/form/' + ${client.id}}" th:text="' Facturar'"></a>
+						<a sec:authorize="hasRole('ROLE_USER')"
+						class="btn btn-success btn-xs bi-pencil"
+						th:href="@{/client/form/} + ${client.id}" th:text="' Editar'"></a>
+						<a sec:authorize="hasRole('ROLE_ADMIN')"
+						class="btn btn-danger btn-xs bi-trash3"
+						th:href="@{/client/delete/} + ${client.id}" th:text="' Eliminar'"
+						th:attr="onclick=|return confirm('Está seguro que desea eliminar el cliente ${client.name}?');|"></a>
+					</td>
+				</tr>
+			</tbody>
+
+		</table>
+		<nav th:replace="common/paginator :: nav"></nav>
+
+	</div>
+
+	<footer th:replace="common/layout :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="common/layout :: head"></head>
+<meta charset="UTF-8" />
+<body>
+
+	<header th:replace="common/layout :: header"></header>
+
+	<div class="container py-4">
+		<div class="row mb-2">
+			<div class="col-md-6">
+				<h2 th:text="${title}" class="mb-4"></h2>
+			</div>
+			<div class="col-md-6">
+				<a sec:authorize="hasRole('ROLE_USER')" th:href="@{/product/form/}"
+					class="btn btn-primary bi bi-bag-plus active float-right"
+					role="button" aria-pressed="true"
+					th:text="' Registrar nuevo producto'"></a>
+			</div>
+		</div>
+		<form th:replace="common/paginator :: search"></form>
+		<table class="table table-striped">
+			<thead class="thead">
+				<tr>
+					<th>Nombre</th>
+					<th>Precio</th>
+					<th sec:authorize="hasRole('ROLE_USER')">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="product: ${products}">
+					<td th:text="${product.name}"></td>
+					<td th:text="${#numbers.formatCurrency(product.price)}"></td>
+					<td sec:authorize="hasRole('ROLE_USER')"><a
+						sec:authorize="hasRole('ROLE_USER')"
+						class="btn btn-success btn-xs bi-pencil"
+						th:href="@{/product/form/} + ${product.id}" th:text="' Editar'"></a>
+						<a sec:authorize="hasRole('ROLE_admin')"
+						class="btn btn-danger btn-xs bi-trash3"
+						th:href="@{/product/delete/} + ${product.id}"
+						th:text="' Eliminar'"
+						th:attr="onclick=|return confirm('Está seguro que desea eliminar el producto ${product.name}?');|"></a>
+					</td>
+				</tr>
+			</tbody>
+
+		</table>
+		<nav th:replace="common/paginator :: nav"></nav>
+
+	</div>
+
+	<footer th:replace="common/layout :: footer"></footer>
+</body>
+</html>

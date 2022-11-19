@@ -1,7 +1,7 @@
 package com.javausergroupcr.springdata.app.models.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,11 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotEmpty;
+
+import org.hibernate.annotations.Where;
 
 import lombok.Data;
 
@@ -30,38 +30,56 @@ public class Invoice implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotEmpty
-	private String description;
-
-	private String observation;
-
-	@Temporal(TemporalType.DATE)
-	private Date createAt;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Client client;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "invoice_id")
 	private List<InvoiceItem> items;
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "invoice_id")
+	@Where(clause = "enabled = true")
+	@OrderBy("createdAt DESC")
+	private List<Payment> payments;
+	
+	private boolean enabled;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_by")
+	private DBUser createdBy;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "updated_by")
+	private DBUser updatedBy;
+
+	private LocalDateTime createdAt;
+	
+	private LocalDateTime updatedAt;
 
 	@PrePersist
 	public void prePersist() {
-		createAt = new Date();
+		createdAt = LocalDateTime.now();
 	}
 
-	public void addInvoiceItem(InvoiceItem item) {
+	public void addItem(InvoiceItem item) {
 		this.items.add(item);
 	}
 
-	public Double getTotal() {
-		Double total = 0.0;
-		int size = items.size();
+	public void addPayment(Payment payment) {
+		this.payments.add(payment);
+	}
 
-		for (int i = 0; i < size; i++) {
-			total += items.get(i).calculateAmount();
-		}
-		return total;
+	public double getTotal() {
+		return items.stream().mapToDouble(i -> i.calculateAmount()).sum();
+	}
+
+	public double getPaid() {
+		return payments.stream().filter(p-> p.isEnabled()).mapToDouble(p -> p.getAmount()).sum();
+	}
+	
+	public double getBalance() {
+		return getTotal() - getPaid();
 	}
 
 	private static final long serialVersionUID = 1L;
