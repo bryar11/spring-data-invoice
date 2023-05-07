@@ -8,11 +8,14 @@
 			<tr id="row_{ID}">
 				<td class="d-none"><input type="hidden" value="{ID}"
 					name="item_id[]" /></td>
+				<td>{CODE}</td>
 				<td>{NAME}</td>
-				<td>{FORMATTED_PRICE}</td>
+				<td><input type="number" value="{PRICE}" name="price[]"
+					id="price_{ID}" class="form-control col-sm-6"
+					onchange="itemsHelper.calculateAmount({ID});" /></td>
 				<td><input type="number" value="1" name="quantity[]"
 					id="quantity_{ID}" class="form-control col-sm-4"
-					onchange="itemsHelper.calculateAmount({ID}, {PRICE}, this.value);" /></td>
+					onchange="itemsHelper.calculateAmount({ID});" /></td>
 				<td class="d-none"><span id="total_amount_{ID}" hidden="hidden">0</span></td>
 				<td><span id="formatted_amount_{ID}">0</span></td>
 				<td><a href="#" class="btn btn-danger btn-xs bi-trash"

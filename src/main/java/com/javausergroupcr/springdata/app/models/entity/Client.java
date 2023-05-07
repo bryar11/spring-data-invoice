@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -33,11 +34,14 @@ public class Client implements Serializable {
 	private Long id;
 
 	@NotEmpty
+	@Column(length = 50)
 	private String name;
 
+	@Column(length = 50)
 	private String phone;
 
 	@Email
+	@Column(length = 50)
 	private String email;
 
 	private boolean enabled;
@@ -67,10 +71,6 @@ public class Client implements Serializable {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	public double getBalance() {
-		return invoices.stream().filter(f -> f.isEnabled()).mapToDouble(f -> f.getBalance()).sum();
 	}
 
 	private static final long serialVersionUID = 1L;

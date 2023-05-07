@@ -22,10 +22,12 @@
 			</div>
 			<div class="col-md-6">
 				<div class="input-group">
-					<span class="input-group-addon bi-search" id="basic-addon"></span>
+					<div class="input-group-prepend">
+						<span class="input-group-text bi-search" id="searchIcon"></span>
+					</div>
 					<input id="term" name="term" type="text" th:value="${term}"
 						class="form-control" onchange="this.form.submit();"
-						aria-describedby="basic-addon">
+						aria-describedby="searchIcon">
 				</div>
 			</div>
 		</div>

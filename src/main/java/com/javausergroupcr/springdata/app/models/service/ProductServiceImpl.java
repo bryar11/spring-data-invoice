@@ -24,18 +24,19 @@ public class ProductServiceImpl implements IProductService {
 	}
 
 	@Override
-	public Page<Product> findAllByName(String name, Pageable pageable) {
-		return productDao.findAllByNameContainingIgnoreCaseAndEnabledTrueOrderByNameAsc(name, pageable);
+	@Transactional(readOnly = true)
+	public Page<Product> findAllByTerm(String term, Pageable pageable) {
+		return productDao.findAllByTerm("%" + term + "%", pageable);
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<Product> findAllByName(String term) {
-		return productDao.findByNameContainingIgnoreCaseAndEnabledTrue(term);
+	public List<Product> findAllByTerm(String term) {
+		return productDao.findAllByTerm("%" + term + "%");
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public Product findById(Long id) {
 		return productDao.findByIdAndEnabledTrue(id);
 	}

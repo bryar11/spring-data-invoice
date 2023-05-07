@@ -2,7 +2,6 @@ package com.javausergroupcr.springdata.app.controllers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -53,7 +51,7 @@ public class InvoiceController {
 	@GetMapping("/view/{id}")
 	public String view(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 
-		Invoice invoice = invoiceService.fetchByIdWithClientWithItemInvoiceWithProduct(id);
+		Invoice invoice = invoiceService.fetchByIdWithClientWithItemWithProduct(id);
 
 		if (invoice == null) {
 			flash.addFlashAttribute("error", "La factura no existe");
@@ -89,22 +87,13 @@ public class InvoiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@GetMapping(value = "/find-product/{term}", produces = { "application/json" })
-	public @ResponseBody List<Product> findProduct(@PathVariable String term) {
-		return productService.findAllByName(term);
-	}
-
-	@Secured("ROLE_USER")
 	@PostMapping("/form")
 	public String save(@Valid Invoice invoice, BindingResult result, Model model,
 			@RequestParam(name = "item_id[]", required = false) Long[] itemId,
 			@RequestParam(name = "quantity[]", required = false) int[] quantity,
-			@RequestParam(name = "isPaid", required = false) boolean isPaid, Authentication authentication,
-			RedirectAttributes flash, SessionStatus status) {
-
-		User user = (User) authentication.getPrincipal();
-		DBUser createdBy = userService.findByUsername(user.getUsername());
-		LocalDateTime createdAt = LocalDateTime.now();
+			@RequestParam(name = "price[]", required = false) double[] price,
+			@RequestParam(name = "paid", required = false, defaultValue = "0") double paid,
+			Authentication authentication, RedirectAttributes flash, SessionStatus status) {
 
 		if (result.hasErrors()) {
 			model.addAttribute("title", "Registrar factura");
@@ -122,12 +111,23 @@ public class InvoiceController {
 			InvoiceItem item = new InvoiceItem();
 			item.setQuantity(quantity[i]);
 			item.setProduct(product);
+			item.setPrice(price[i]);
 			invoice.addItem(item);
 		}
+		
+		if (paid > invoice.getTotal()) {
+			model.addAttribute("title", "Registrar factura");
+			model.addAttribute("error", "El monto pagado debe de ser menor al monto por pagar");
+			return "invoice/form";
+		}
+		
+		User user = (User) authentication.getPrincipal();
+		DBUser createdBy = userService.findByUsername(user.getUsername());
+		LocalDateTime createdAt = LocalDateTime.now();
 
-		if (isPaid) {
+		if (paid > 0 ) {
 			Payment payment = new Payment();
-			payment.setAmount(invoice.getTotal());
+			payment.setAmount(paid);
 			payment.setEnabled(true);
 			payment.setCreatedBy(createdBy);
 			payment.setCreatedAt(createdAt);
@@ -150,11 +150,12 @@ public class InvoiceController {
 	public String delete(@PathVariable(value = "id") Long id, Authentication authentication, RedirectAttributes flash) {
 
 		Invoice invoice = invoiceService.findById(id);
-		User user = (User) authentication.getPrincipal();
-		DBUser updatedBy = userService.findByUsername(user.getUsername());
-		LocalDateTime updatedAt = LocalDateTime.now();
 
 		if (null != invoice) {
+			User user = (User) authentication.getPrincipal();
+			DBUser updatedBy = userService.findByUsername(user.getUsername());
+			LocalDateTime updatedAt = LocalDateTime.now();
+			
 			invoice.setEnabled(false);
 			invoice.setUpdatedBy(updatedBy);
 			invoice.setUpdatedAt(updatedAt);

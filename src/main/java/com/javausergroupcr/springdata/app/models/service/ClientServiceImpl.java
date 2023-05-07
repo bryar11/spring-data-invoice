@@ -22,12 +22,13 @@ public class ClientServiceImpl implements IClientService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Client> findAllByName(String name, Pageable pageable) {
 		return clientDao.findAllByNameContainingIgnoreCaseAndEnabledTrueOrderByNameAsc(name, pageable);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public Client findById(Long id) {
 		return clientDao.findByIdAndEnabledTrue(id);
 	}

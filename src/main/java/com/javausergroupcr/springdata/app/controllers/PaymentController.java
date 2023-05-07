@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,7 +42,7 @@ public class PaymentController {
 
 	@Secured("ROLE_USER")
 	@GetMapping("/form/{invoiceId}")
-	public String createPayment(@PathVariable(value = "invoiceId") Long invoiceId, Map<String, Object> model,
+	public String create(@PathVariable(value = "invoiceId") Long invoiceId, Map<String, Object> model,
 			RedirectAttributes flash) {
 
 		Invoice invoice = invoiceService.findById(invoiceId);
@@ -49,7 +50,9 @@ public class PaymentController {
 		if (invoice == null) {
 			flash.addFlashAttribute("error", "La factura no existe");
 			return "redirect:/client/list";
-		} else if (invoice.getBalance() <= 0) {
+		}
+
+		if (invoice.getTotal() - invoice.getPaid() <= 0) {
 			flash.addFlashAttribute("error", "La factura ya está pagada");
 			return "redirect:/invoice/view/" + invoiceId;
 		}
@@ -62,19 +65,11 @@ public class PaymentController {
 
 	@Secured("ROLE_USER")
 	@PostMapping("/form/")
-	public String savePayment(@Valid Payment payment, BindingResult result, Model model, RedirectAttributes flash,
-			SessionStatus status, Authentication authentication) {
-
-		User user = (User) authentication.getPrincipal();
-		DBUser createdBy = userService.findByUsername(user.getUsername());
-		LocalDateTime createdAt = LocalDateTime.now();
+	public String save(@Valid Payment payment, BindingResult result, Model model,
+			@RequestParam(name = "balance", required = false) double balance, Authentication authentication,
+			RedirectAttributes flash, SessionStatus status) {
+		
 		Invoice invoice = invoiceService.findById(payment.getInvoiceId());
-
-		if (result.hasErrors()) {
-			model.addAttribute("invoice", invoice);
-			model.addAttribute("title", "Registrar pago");
-			return "payment/form";
-		}
 
 		if (payment.getAmount() <= 0) {
 			model.addAttribute("invoice", invoice);
@@ -83,12 +78,22 @@ public class PaymentController {
 			return "payment/form";
 		}
 
-		if (payment.getAmount() > invoice.getBalance()) {
+		if (result.hasErrors()) {
+			model.addAttribute("invoice", invoice);
+			model.addAttribute("title", "Registrar pago");
+			return "payment/form";
+		}
+
+		if (payment.getAmount() > balance) {
 			model.addAttribute("invoice", invoice);
 			model.addAttribute("title", "Registrar pago");
 			model.addAttribute("error", "El monto debe de ser menor al monto pendiente por pagar");
 			return "payment/form";
 		}
+
+		User user = (User) authentication.getPrincipal();
+		DBUser createdBy = userService.findByUsername(user.getUsername());
+		LocalDateTime createdAt = LocalDateTime.now();
 
 		payment.setEnabled(true);
 		payment.setCreatedBy(createdBy);
@@ -120,7 +125,7 @@ public class PaymentController {
 		}
 		flash.addFlashAttribute("error", "Pago no existe");
 
-		return "redirect:/invoice/list";
+		return "redirect:/client/list";
 	}
 
 }

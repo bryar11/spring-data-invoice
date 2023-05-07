@@ -3,7 +3,7 @@ $("#find_product").autocomplete({
 	source: function(request, response) {
 		if (request.term.length > 2) {
 			$.ajax({
-				url: "/invoice/find-product/" + request.term,
+				url: "/product/find-product/" + request.term,
 				dataType: "json",
 				data: {
 					term: request.term
@@ -12,7 +12,9 @@ $("#find_product").autocomplete({
 					response($.map(data, function(item) {
 						return {
 							value: item.id,
-							label: item.name,
+							label: item.code + ' ' + item.name,
+							code: item.code,
+							name: item.name,
 							price: item.price,
 						};
 					}));
@@ -29,12 +31,12 @@ $("#find_product").autocomplete({
 		var item = $("#invoiceItemsTemplate").html();
 
 		item = item.replace(/{ID}/g, ui.item.value);
-		item = item.replace(/{NAME}/g, ui.item.label);
+		item = item.replace(/{CODE}/g, ui.item.code);
+		item = item.replace(/{NAME}/g, ui.item.name);
 		item = item.replace(/{PRICE}/g, ui.item.price);
-		item = item.replace(/{FORMATTED_PRICE}/g, itemsHelper.formatCurrency(ui.item.price));
 
 		$("#findItems tbody").append(item);
-		itemsHelper.calculateAmount(ui.item.value, ui.item.price, 1);
+		itemsHelper.calculateAmount(ui.item.value);
 
 		return false;
 	}
@@ -46,8 +48,10 @@ $("form").submit(function() {
 });
 
 var itemsHelper = {
-	calculateAmount: function(id, price, quantity) {
-		var subtotal = parseInt(price) * parseInt(quantity);
+	calculateAmount: function(id) {
+		var price = $("#price_" + id).val();
+		var quantity = $("#quantity_" + id).val();
+		var subtotal = parseFloat(price) * parseInt(quantity);
 		$("#total_amount_" + id).html(subtotal);
 		$("#formatted_amount_" + id).html(itemsHelper.formatCurrency(subtotal));
 		this.calculateTotal();
@@ -66,7 +70,7 @@ var itemsHelper = {
 	increaseQuantity: function(id, price) {
 		var quantity = $("#quantity_" + id).val() ? parseInt($("#quantity_" + id).val()) : 0;
 		$("#quantity_" + id).val(++quantity);
-		this.calculateAmount(id, price, quantity);
+		this.calculateAmount(id);
 	},
 	deleteInvoiceItem: function(id) {
 		$("#row_" + id).remove();
@@ -76,7 +80,7 @@ var itemsHelper = {
 		var total = 0;
 
 		$('span[id^="total_amount_"]').each(function() {
-			total += parseInt($(this).html());
+			total += parseFloat($(this).html());
 		});
 
 		$('#total').val(this.formatCurrency(total));

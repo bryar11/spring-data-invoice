@@ -42,7 +42,7 @@ public class JpaUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException("Usuario '" + username + "' no tiene roles asignados");
 		}
 
-		return new User(dbUser.getName(), dbUser.getPassword(), dbUser.isEnabled(), true, true, true, authorities);
+		return new User(dbUser.getUsername(), dbUser.getPassword(), dbUser.isEnabled(), true, true, true, authorities);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.javausergroupcr.springdata.app.controllers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +17,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -53,7 +56,7 @@ public class ProductController {
 		if ("".equals(term)) {
 			products = productService.findAll(pageRequest);
 		} else {
-			products = productService.findAllByName(term, pageRequest);
+			products = productService.findAllByTerm(term, pageRequest);
 		}
 		pageRender = new PageRender<Product>("/product/list", products);
 
@@ -63,6 +66,12 @@ public class ProductController {
 		model.addAttribute("page", pageRender);
 		model.addAttribute("products", products);
 		return "product/list";
+	}
+
+	@Secured("ROLE_USER")
+	@GetMapping(value = "/find-product/{term}", produces = { "application/json" })
+	public @ResponseBody List<Product> findProduct(@PathVariable String term) {
+		return productService.findAllByTerm(term);
 	}
 
 	@Secured("ROLE_USER")
@@ -95,25 +104,32 @@ public class ProductController {
 	public String save(@Valid Product product, BindingResult result, Model model, RedirectAttributes flash,
 			SessionStatus status, Authentication authentication) {
 
-		String message = null;
 		String title = null;
-		User user = (User) authentication.getPrincipal();
-
+		
 		if (null == product.getId()) {
-			message = "Producto creado con éxito";
 			title = "Registrar producto";
-			product.setCreatedBy(userService.findByUsername(user.getUsername()));
-			product.setCreatedAt(LocalDateTime.now());
 		} else {
-			message = "Producto editado con éxito";
 			title = "Editar producto";
-			product.setUpdatedBy(userService.findByUsername(user.getUsername()));
-			product.setUpdatedAt(LocalDateTime.now());
 		}
 
 		if (result.hasErrors()) {
 			model.addAttribute("title", title);
 			return "product/form";
+		}
+
+		String message = null;
+		User user = (User) authentication.getPrincipal();
+		DBUser changedBy = userService.findByUsername(user.getUsername());
+		LocalDateTime changedAt = LocalDateTime.now();
+
+		if (null == product.getId()) {
+			message = "Producto creado con éxito";
+			product.setCreatedBy(changedBy);
+			product.setCreatedAt(changedAt);
+		} else {
+			message = "Producto editado con éxito";
+			product.setUpdatedBy(changedBy);
+			product.setUpdatedAt(changedAt);
 		}
 
 		product.setEnabled(true);

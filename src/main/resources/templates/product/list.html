@@ -23,6 +23,7 @@
 		<table class="table table-striped">
 			<thead class="thead">
 				<tr>
+					<th>Código</th>
 					<th>Nombre</th>
 					<th>Precio</th>
 					<th sec:authorize="hasRole('ROLE_USER')">Acciones</th>
@@ -30,13 +31,14 @@
 			</thead>
 			<tbody>
 				<tr th:each="product: ${products}">
+					<td th:text="${product.code}"></td>
 					<td th:text="${product.name}"></td>
 					<td th:text="${#numbers.formatCurrency(product.price)}"></td>
 					<td sec:authorize="hasRole('ROLE_USER')"><a
 						sec:authorize="hasRole('ROLE_USER')"
 						class="btn btn-success btn-xs bi-pencil"
 						th:href="@{/product/form/} + ${product.id}" th:text="' Editar'"></a>
-						<a sec:authorize="hasRole('ROLE_admin')"
+						<a sec:authorize="hasRole('ROLE_ADMIN')"
 						class="btn btn-danger btn-xs bi-trash3"
 						th:href="@{/product/delete/} + ${product.id}"
 						th:text="' Eliminar'"

@@ -3,6 +3,7 @@ package com.javausergroupcr.springdata.app.models.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -27,7 +28,11 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(length = 50)
+	private String code;
+
 	@NotEmpty
+	@Column(length = 50)
 	private String name;
 
 	private double price;

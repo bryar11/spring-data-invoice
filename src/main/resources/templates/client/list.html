@@ -26,7 +26,6 @@
 					<th>Nombre</th>
 					<th>Teléfono</th>
 					<th>Correo</th>
-					<th sec:authorize="hasRole('ROLE_USER')">Saldo</th>
 					<th sec:authorize="hasRole('ROLE_USER')">Acciones</th>
 				</tr>
 			</thead>
@@ -35,8 +34,6 @@
 					<td th:text="${client.name}"></td>
 					<td th:text="${client.phone}"></td>
 					<td th:text="${client.email}"></td>
-					<td sec:authorize="hasRole('ROLE_USER')"
-						th:text="${#numbers.formatCurrency(client.balance)}"></td>
 					<td sec:authorize="hasRole('ROLE_USER')"><a
 						class="btn btn-info btn-xs bi-eye"
 						th:href="@{/client/view/} + ${client.id}" th:text="' Ver'"></a> <a

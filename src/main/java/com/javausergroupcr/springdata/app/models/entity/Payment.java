@@ -20,7 +20,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "invoice_payments")
+@Table(name = "payments")
 public class Payment implements Serializable {
 
 	@Id

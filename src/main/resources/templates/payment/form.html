@@ -11,6 +11,8 @@
 		<hr>
 		<form th:action="@{/payment/form/}" th:object="${invoice}"
 			method="post" enctype="multipart/form-data">
+			<input type="hidden" name="balance"
+				th:value="${invoice.total - invoice.paid}" />
 			<div class="form-group row">
 				<label for="id" class="col-sm-2 col-form-label" th:text="'Factura'"></label>
 				<div class="col-sm-6">
@@ -48,7 +50,7 @@
 					th:text="'Pendiente'"></label>
 				<div class="col-sm-6">
 					<input name="balance"
-						th:value="${#numbers.formatCurrency(invoice.balance)}"
+						th:value="${#numbers.formatCurrency(invoice.total - invoice.paid)}"
 						class="form-control" disabled='disabled' />
 				</div>
 			</div>
@@ -57,7 +59,7 @@
 				<label for="amount" class="col-sm-2 col-form-label"
 					th:text="'Monto'"></label>
 				<div class="col-sm-6">
-					<input type="number" name="amount" class="form-control" />
+					<input type="number" name="amount" class="form-control" step=".01"/>
 				</div>
 			</div>
 

@@ -11,9 +11,9 @@ public interface IProductService {
 	
 	public Page<Product> findAll(Pageable pageable);
 	
-	public Page<Product> findAllByName(String term, Pageable pageable);
+	public Page<Product> findAllByTerm(String term, Pageable pageable);
 	
-	public List<Product> findAllByName(String term);
+	public List<Product> findAllByTerm(String term);
 	
 	public Product findById(Long id);
 

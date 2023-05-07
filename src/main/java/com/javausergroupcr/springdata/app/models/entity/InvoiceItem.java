@@ -30,10 +30,6 @@ public class InvoiceItem implements Serializable {
 	
 	private double price;
 
-	public double calculateAmount() {
-		return quantity * product.getPrice();
-	}
-
 	private static final long serialVersionUID = 1L;
 
 }

@@ -36,25 +36,25 @@ public class Invoice implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "invoice_id")
 	private List<InvoiceItem> items;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "invoice_id")
 	@Where(clause = "enabled = true")
 	@OrderBy("createdAt DESC")
 	private List<Payment> payments;
-	
+
 	private boolean enabled;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "created_by")
 	private DBUser createdBy;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "updated_by")
 	private DBUser updatedBy;
 
 	private LocalDateTime createdAt;
-	
+
 	private LocalDateTime updatedAt;
 
 	@PrePersist
@@ -71,15 +71,11 @@ public class Invoice implements Serializable {
 	}
 
 	public double getTotal() {
-		return items.stream().mapToDouble(i -> i.calculateAmount()).sum();
+		return items.stream().mapToDouble(i -> i.getQuantity() * i.getPrice()).sum();
 	}
 
 	public double getPaid() {
-		return payments.stream().filter(p-> p.isEnabled()).mapToDouble(p -> p.getAmount()).sum();
-	}
-	
-	public double getBalance() {
-		return getTotal() - getPaid();
+		return payments.stream().mapToDouble(p -> p.getAmount()).sum();
 	}
 
 	private static final long serialVersionUID = 1L;

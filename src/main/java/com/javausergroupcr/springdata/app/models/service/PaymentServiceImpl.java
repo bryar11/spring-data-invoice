@@ -20,6 +20,7 @@ public class PaymentServiceImpl implements IPaymentService {
 	}
 
 	@Override
+	@Transactional
 	public Payment findById(long id) {
 		return paymentDao.findByIdAndEnabledTrue(id);
 	}

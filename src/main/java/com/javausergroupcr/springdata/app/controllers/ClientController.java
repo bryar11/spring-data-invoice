@@ -31,6 +31,7 @@ import com.javausergroupcr.springdata.app.models.entity.DBUser;
 import com.javausergroupcr.springdata.app.models.entity.Invoice;
 import com.javausergroupcr.springdata.app.models.entity.Payment;
 import com.javausergroupcr.springdata.app.models.service.IClientService;
+import com.javausergroupcr.springdata.app.models.service.IInvoiceService;
 import com.javausergroupcr.springdata.app.models.service.IUserService;
 import com.javausergroupcr.springdata.app.util.paginator.PageRender;
 
@@ -42,22 +43,34 @@ public class ClientController {
 	@Autowired
 	private IClientService clientService;
 	@Autowired
+	private IInvoiceService invoiceService;
+	@Autowired
 	private IUserService userService;
 
 	@Secured("ROLE_USER")
 	@GetMapping(value = "/view/{id}")
-	public String view(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash,
-			Locale locale) {
+	public String view(@PathVariable(value = "id") Long id, @RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "page", defaultValue = "0") int page, Map<String, Object> model,
+			RedirectAttributes flash, Locale locale) {
 
-		Client client = clientService.fetchByIdWithInvoices(id);
+		Client client = clientService.findById(id);
 		if (client == null) {
 			flash.addFlashAttribute("error", "El cliente no existe");
 			return "redirect:/client/list";
 		}
 
+		double balance = invoiceService.calculateBalanceByClient(client);
+
+		Pageable pageRequest = PageRequest.of(page, size);
+		Page<Invoice> invoices = invoiceService.findByClientId(id, pageRequest);
+		PageRender<Invoice> pageRender = new PageRender<Invoice>("/client/view/" + id, invoices);
+		
 		model.put("client", client);
+		model.put("balance", balance);
+		model.put("invoices", invoices);
+		model.put("size", size);
+		model.put("page", pageRender);
 		model.put("title", "Detalles del cliente: " + client.getName());
-		System.out.println(1);
 		return "client/view";
 	}
 
@@ -116,8 +129,20 @@ public class ClientController {
 	public String save(@Valid Client client, BindingResult result, Model model, RedirectAttributes flash,
 			SessionStatus status, Authentication authentication) {
 
-		String message = null;
 		String title = null;
+
+		if (null == client.getId()) {
+			title = "Registrar cliente";
+		} else {
+			title = "Editar cliente";
+		}
+
+		if (result.hasErrors()) {
+			model.addAttribute("title", title);
+			return "client/form";
+		}
+		
+		String message = null;
 		User user = (User) authentication.getPrincipal();
 		DBUser changedBy = userService.findByUsername(user.getUsername());
 		LocalDateTime changedAt = LocalDateTime.now();
@@ -134,11 +159,6 @@ public class ClientController {
 			client.setUpdatedAt(changedAt);
 		}
 
-		if (result.hasErrors()) {
-			model.addAttribute("title", title);
-			return "client/form";
-		}
-
 		client.setEnabled(true);
 		clientService.save(client);
 		status.setComplete();
@@ -150,11 +170,11 @@ public class ClientController {
 	@RequestMapping(value = "/delete/{id}")
 	public String delete(@PathVariable(value = "id") Long id, Authentication authentication, RedirectAttributes flash) {
 
-		User user = (User) authentication.getPrincipal();
-		DBUser updatedBy = userService.findByUsername(user.getUsername());
-		LocalDateTime updatedAt = LocalDateTime.now();
-
 		if (null != id && id > 0) {
+			User user = (User) authentication.getPrincipal();
+			DBUser updatedBy = userService.findByUsername(user.getUsername());
+			LocalDateTime updatedAt = LocalDateTime.now();
+			
 			Client client = clientService.findById(id);
 			client.setEnabled(false);
 			client.setUpdatedBy(updatedBy);

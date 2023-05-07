@@ -19,7 +19,7 @@
 				<li class="list-group-item"
 					th:text="'Pagado: ' + ${#numbers.formatCurrency(invoice.paid)}"></li>
 				<li class="list-group-item list-group-item-primary"
-					th:text="'Pendiente: ' + ${#numbers.formatCurrency(invoice.balance)}"></li>
+					th:text="'Pendiente: ' + ${#numbers.formatCurrency(invoice.total - invoice.paid)}"></li>
 			</ul>
 			<table class="table">
 				<tbody>
@@ -30,7 +30,7 @@
 									th:href="@{'/client/view/' + ${invoice.client.id}}"
 									th:text="' Volver'"></a> <a
 									class="btn btn-primary btn-lg bi-credit-card"
-									th:if="${invoice.balance > 0}"
+									th:if="${invoice.total - invoice.paid > 0.1}"
 									th:href="@{'/payment/form/' + ${invoice.id}}" th:text="' Pagar'"></a>
 							</p>
 						</td>
@@ -57,10 +57,10 @@
 			</thead>
 			<tbody>
 				<tr th:each="item: ${invoice.items}">
-					<td th:text="${item.product.name}"></td>
-					<td th:text="${#numbers.formatCurrency(item.product.price)}"></td>
+					<td th:text="${item.product.code} + ' ' + ${item.product.name}"></td>
+					<td th:text="${#numbers.formatCurrency(item.price)}"></td>
 					<td th:text="${item.quantity}"></td>
-					<td th:text="${#numbers.formatCurrency(item.calculateAmount())}"></td>
+					<td th:text="${#numbers.formatCurrency(item.price * item.quantity)}"></td>
 				</tr>
 			</tbody>
 

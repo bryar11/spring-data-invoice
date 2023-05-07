@@ -17,7 +17,7 @@
 				<li th:if="${client?.email}" class="list-group-item"
 					th:text="'Correo: ' + ${client.email}"></li>
 				<li class="list-group-item list-group-item-primary"
-					th:text="'Saldo: ' + ${#numbers.formatCurrency(client.balance)}"></li>
+					th:text="'Saldo: ' + ${#numbers.formatCurrency(balance)}"></li>
 			</ul>
 			<table class="table">
 				<tbody>
@@ -35,12 +35,7 @@
 			</table>
 		</div>
 		<h2 th:text="'Facturas'"></h2>
-		<hr th:if="${#lists.isEmpty(client.invoices)}" />
-		<div th:if="${#lists.isEmpty(client.invoices)}"
-			class="alert alert-info my-4"
-			th:text="'No hay facturas asignadas para el cliente'"></div>
-
-		<table th:if="${not #lists.isEmpty(client.invoices)}"
+		<table th:if="${not #lists.isEmpty(invoices)}"
 			class="table table-striped my-4">
 			<thead class="thead">
 				<tr>
@@ -53,17 +48,17 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="invoice: ${client.invoices}">
+				<tr th:each="invoice: ${invoices}">
 					<th scope="row" th:text="${invoice.id}"></th>
 					<td th:text="${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></td>
 					<td th:text="${#numbers.formatCurrency(invoice.total)}"></td>
 					<td th:text="${#numbers.formatCurrency(invoice.paid)}"></td>
-					<td th:text="${#numbers.formatCurrency(invoice.balance)}"></td>
+					<td th:text="${#numbers.formatCurrency(invoice.total - invoice.paid)}"></td>
 					<td sec:authorize="hasRole('ROLE_USER')"><a
 						class="btn btn-info btn-xs bi-eye"
 						th:href="@{'/invoice/view/' + ${invoice.id}}" th:text="' Ver'"></a>
 						<a sec:authorize="hasRole('ROLE_USER')"
-						th:if="${invoice.balance > 0}"
+						th:if="${invoice.total - invoice.paid > 0.1}"
 						class="btn btn-primary btn-xs bi-credit-card"
 						th:href="@{'/payment/form/' + ${invoice.id}}" th:text="' Pagar'"></a>
 						<a sec:authorize="hasRole('ROLE_ADMIN')"
@@ -75,6 +70,7 @@
 			</tbody>
 
 		</table>
+		<nav th:replace="common/paginator :: nav"></nav>
 
 	</div>
 
